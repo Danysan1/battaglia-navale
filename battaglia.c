@@ -61,3 +61,7 @@ void debug(const char *testo){
     if(DEBUG_ENABLE)
         printf("LOG: %s\n", testo);
 }
+
+void update() {
+	printf("//box//");
+}
