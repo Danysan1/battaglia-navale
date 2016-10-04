@@ -135,12 +135,13 @@ void deallocazione(int **matrice, int dim) {
 int ** allocaCampo(int dim){
     int ** matrice = (int**) malloc(dim * sizeof(int*));
     
-    for(int i=0; i<dim; i++){
+    for(int i=0; i<dim; i++)
         matrice[i] = (int *) malloc(dim * sizeof(int));
         
-        for(int k=0; k<dim; k++)
-            matrice[i][k] = 0;
-    }
+	for(int i=0; i<dim; i++)
+       		for(int k=0; k<dim; k++)
+            		matrice[i][k] = 0;
+    
     
     return matrice;
 }
@@ -154,7 +155,8 @@ int ** allocaCampo(int dim){
 */
 int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 
-	int i,piccole=0, medie=0, grandi=0, enormi=0, verso, x, y;
+	int i,k,piccole=0, medie=0, grandi=0, enormi=0, verso, x, y;
+	char c, lettere[22]="abcdefghilmnopqrstuvz";
 	
 	stampa(dimensione,matrix,NULL);
 
@@ -166,12 +168,18 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 	printf("Inserire: %d piccole, %d medie, %d grandi, %d enormi\n", piccole, medie, grandi,enormi);
 	
 	//inserimento piccole
+	
 	for(i=0; i<piccole; i++) {
-		printf("inserire riga(x): ");
+		printf("Inserimento piccole (1) \n");
+		printf("inserire riga(numero): ");
 		scanf("%d", &x);
 
-		printf("inserire colonna(y): ");
-		scanf("%d", &y);
+		printf("inserire colonna(lettera): ");
+		scanf("%c", &c);/// <------------------------SALTA LA SCANF?!?!?!?
+
+		for(k=0; k<22; k++)
+			if(lettere[k]==c)
+				y=k;
 
 		if(matrix[x][y]==0 && check(x,y)==1 )
 			matrix[x][y]=1;
@@ -179,17 +187,23 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			debug("posizione già occupata o inserimento errato");
 			i--; //faccio ripetere l'operazione
 		}
+		stampa(dimensione,matrix,NULL);
 	}
 
-	stampa(dimensione,matrix,NULL);
+	printf("=================================\n");
 
 	//inserimento medie
 	for(i=0; i<medie; i++) {
-		printf("inserire riga(x): ");
+		printf("Inserimento medie (2) \n");
+		printf("inserire riga(numero): ");
 		scanf("%d", &x);
 
-		printf("inserire colonna(y): ");
-		scanf("%d", &y);
+		printf("inserire colonna(lettera): ");
+		scanf("%c", &c); /// <------------------------SALTA LA SCANF?!?!?!?
+
+		for(k=0; k<22; k++)
+			if(lettere[k]==c)
+				y=k;
 	
 		printf("inserire verso(1-orizzontale , 0-verticale): ");
 		scanf("%d", &verso);
@@ -207,16 +221,23 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			debug("posizione già occupata o inserimento errato");
 			i--; //faccio ripetere l'operazione
 		}
+		stampa(dimensione,matrix,NULL);
 	}
-
-	stampa(dimensione,matrix,NULL);
+	
+	printf("=================================\n");
+	
 	//inserimento grandi
 	for(i=0; i<grandi; i++) {
-		printf("inserire riga(x): ");
+		printf("Inserimento grandi (3) \n");
+		printf("inserire riga(numero): ");
 		scanf("%d", &x);
 
-		printf("inserire colonna(y): ");
-		scanf("%d", &y);
+		printf("inserire colonna(lettera): ");
+		scanf("%c", &c);/// <------------------------SALTA LA SCANF?!?!?!?
+
+		for(k=0; k<22; k++)
+			if(lettere[k]==c)
+				y=k;
 	
 		printf("inserire verso(1-orizzontale , 0-verticale): ");
 		scanf("%d", &verso);
@@ -238,17 +259,23 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			debug("posizione già occupata o inserimento errato");
 			i--; //faccio ripetere l'operazione
 		}
+		stampa(dimensione,matrix,NULL);
 	}
 	
-	stampa(dimensione,matrix,NULL);
+	printf("=================================\n");
 
 	//inserimento enormi
 	for(i=0; i<enormi; i++) {
-		printf("inserire riga(x): ");
+		printf("Inserimento enormi (4) \n");
+		printf("inserire riga(numero): ");
 		scanf("%d", &x);
 
-		printf("inserire colonna(y): ");
-		scanf("%d", &y);
+		printf("inserire colonna(lettera): ");
+		scanf("%c", &c);/// <------------------------SALTA LA SCANF?!?!?!?
+
+		for(k=0; k<22; k++)
+			if(lettere[k]==c)
+				y=k;
 	
 		printf("inserire verso(1-orizzontale , 0-verticale): ");
 		scanf("%d", &verso);
@@ -272,11 +299,12 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			debug("posizione già occupata o inserimento errato");
 			i--; //faccio ripetere l'operazione
 		}
+		stampa(dimensione,matrix,NULL);
 	}
 
-	stampa(dimensione,matrix,NULL);
+	printf("=================================\n");
 	
-	// Return ??
+	return matrix;
 }
 
 /*
@@ -284,7 +312,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 *  STATO: completa
 */
 int check(int x,int y) {
-    return x>=3 && x<=10 && y>=3 && y<=10;
+    return x>=0 && x<=10 && y>=0 && y<=10;
 }
 
 
@@ -377,7 +405,7 @@ int ** random_computer(int dimensione, int ** matrix) {
 			i--; //ripeti l'operazione, perchè già presente
 	}
 
-	// Return ??
+	return matrix;
 }
 
 /* 
