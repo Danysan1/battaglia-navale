@@ -12,23 +12,36 @@
 * NOTE: -> ogni funzione è dettagliatamente commentata
 *	-> si è modificato qualcosa
 *	-> possibilità di separare il progetto in piu' .c e .h, soluzione troppo compatta in un solo file (da valutare in seguito)
+* 
+* NOTE: Per scaricare le modifiche fatte da qualcun'altro:
+* git fetch --all
+* git merge [persona]/master
+* 
+* NOTE: Per caricare le modifiche:
+* git add [i file modificati]
+* git commit
+* git push
+* 
+* NOTE: Per scaricare le modifiche fatte da qualcun'altro (con merge conflict irrisolvibili):
+* git fetch --all
+* git reset --hard [persona]/master
+* (Al momento di caricare le modifiche invece di "git push" bisognerà usare "git push --force")
 */
 
-// Messaggi di debug abilitati/disabilitati
-int debug_enable = 0;
-void debug(const char *testo);
+int debug_enable = 0; // Messaggi di debug abilitati/disabilitati
+void debug(const char *testo); // Se il debug è abilitato stampa a schermo il messaggio di debug
 
-//funzione di allocazione dinamica + deallocazione
-int ** allocaCampo(int dimensione);
-void deallocazione(int **computer, int **giocatore, int dim);
+// funzioni per l'allocazione dinamica della memoria
+int ** allocaCampo(int dimensione); // Alloca e restituisce una matrice quadrata della dimensione indicata
+void deallocazione(int ** matrice, int dim); // Dealloca una matrice quadrata della dimensione indicata
 
 //funzioni di posizionamento e controllo
-int ** random_computer(int dimensione, int ** matrix);
-int ** posizionamento_giocatore(int dimensione, int ** matrix);
-int check(int x, int y);
+int ** random_computer(int dimensione, int ** matrix); // Riempie la matrice con navi posizionate casualmente
+int ** posizionamento_giocatore(int dimensione, int ** matrix); // Chiede all'utente di inserire le navi nella griglia di battaglia
+int check(int x, int y); // Controlla che l'inserimento sia un numero compreso nel range valido
 
 //funzioni grafiche
-void stampa(int dimensione, int **giocatore, int **nemico);
+void stampa(int dimensione, int **giocatore, int **nemico); // Stampa a schermo i campi del giocatore e del nemico
 
 //funzioni di interazione utente
 int mossa_giocatore(int **computer, int **giocatore);
@@ -36,17 +49,15 @@ int mossa_computer(int **computer, int **giocatore);
 
 
 int main (int argc, char **argv){
-    //Dimensione del campo di battaglia
-    int dim = 0, esito = 0;
-    
-    // Puntatori ai campi di battaglia (computer, giocatore, e parte della mappa del computer scoperta dal giocatore
-    int **computer, **giocatore;
-
-    // Navi abilitate nella partita NON PIU NECESSARIO..NAVI DEFINITE NELLE FUNZIONI
-    //      1x1     2x1     3x1     4x1
-   // int piccola, media, grande, enorme;
-    
-    int fine = 0;
+    int dim = 0,  // Dimensione del campo di battaglia
+        fine = 0, // 0 => Partita in corso, 1 => Partita finita
+        esito = 0; // 0 => Vittoria computer, 1 => Vittoria giocatore
+        
+    int **computer, **giocatore; // Campi di battaglia del computer e del giocatore
+    /**
+     * 
+     * 
+     */
     
     debug("Controllo i parametri");
     if(argc > 1)
@@ -55,7 +66,7 @@ int main (int argc, char **argv){
     if(argc > 2)
         debug_enable = atoi(argv[2]);
 
-    while(dim < 2 || dim > 10){
+    while(dim < 3 || dim > 10){
         debug("Chiedo la dimensione");
         printf("Inserire la dimensione (fra 2 e 10): ");
         scanf("%d", &dim);
@@ -67,16 +78,6 @@ int main (int argc, char **argv){
     debug("Alloco i campi di battaglia");
     computer = allocaCampo(dim);
     giocatore = allocaCampo(dim);
-    
-    /*debug("Calcolo delle navi necessarie"); NON PIU NECESSARIO, IL CALCOLO E' EFFETTUATO A LIVELLO DI CREAZIONE RANDOM/INSERIMENTO 
-    // dim=2 => Solo nave 1x1
-    // dim=3 => Navi 1x1 e 2x1
-    // dim=4 => Navi 1x1, 2x1 e 3x1
-    // dim > 4 => Navi 1x1, 2x1, 3x1 e 4x1
-    piccola = dim > 1;
-    media = dim > 2;
-    grande = dim > 3;
-    enorme = dim > 4; */
     
     debug("Posizionamento navi giocatore");
     giocatore = posizionamento_giocatore(dim,giocatore);
@@ -91,17 +92,14 @@ int main (int argc, char **argv){
         debug("Richiesta mossa giocatore");
         esito = mossa_giocatore(computer, giocatore);
         
-        //debug("Controllo vittoria"); //non piu necessario, integrato in mossa giocatore 
-        
         debug("Calcolo mossa computer");
         esito = mossa_computer(computer, giocatore);
-        
-      	//debug("Controllo sconfitta"); //non piu necessario, integrato in mossa computer
         
         
     } while (esito == 0); //--> successivamente un flag di esito [da definire] decreterà vittoria usr o sys
     
-   deallocazione(computer,giocatore,dim);
+   deallocazione(computer,dim);
+   deallocazione(giocatore,dim);
     
     return 0;
 }
@@ -125,17 +123,13 @@ void debug(const char *testo){
 * dealloca ogni variabile allocata dinamicamente
 * STATO: completa
 */
-void deallocazione(int **computer, int **giocatore, int dim) {
-	int i;
-	debug("Dealloco i campi di battaglia");
+void deallocazione(int **matrice, int dim) {
+	debug("Dealloco un campo di battaglia");
 
-	for(i=0; i<dim; i++)
-		free(computer[i]);
-	for(i=0; i<dim; i++)
-		free(giocatore[i]);
+	for(int i=0; i<dim; i++)
+		free(matrice[i]);
 	
-	free(computer);
-	free(giocatore);
+	free(matrice);
 }
 
 int ** allocaCampo(int dim){
@@ -160,9 +154,9 @@ int ** allocaCampo(int dim){
 */
 int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 
-	int i,k,piccole=0, medie=0, grandi=0, enormi=0, verso, x, y;
+	int i,piccole=0, medie=0, grandi=0, enormi=0, verso, x, y;
 	
-	//--------> PLOT 
+	stampa(dimensione,matrix,NULL);
 
 	piccole=dimensione/2;
 	medie=dimensione/2;
@@ -187,7 +181,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 		}
 	}
 
-	//--------> PLOT 
+	stampa(dimensione,matrix,NULL);
 
 	//inserimento medie
 	for(i=0; i<medie; i++) {
@@ -215,7 +209,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 		}
 	}
 
-	//--------> PLOT 
+	stampa(dimensione,matrix,NULL);
 	//inserimento grandi
 	for(i=0; i<grandi; i++) {
 		printf("inserire riga(x): ");
@@ -246,7 +240,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 		}
 	}
 	
-	//--------> PLOT 
+	stampa(dimensione,matrix,NULL);
 
 	//inserimento enormi
 	for(i=0; i<enormi; i++) {
@@ -280,7 +274,9 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 		}
 	}
 
-	//--------> PLOT 
+	stampa(dimensione,matrix,NULL);
+	
+	// Return ??
 }
 
 /*
@@ -288,11 +284,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 *  STATO: completa
 */
 int check(int x,int y) {
-	if(x!=3 && x!=4 && x!=5 && x!=6 && x!=7 && x!=8 && x!=9 && x!=10 
-	&& y!=3 && y!=4 && y!=5 && y!=6 && y!=7 && y!=8 && y!=9 && y!=10)
-		return 1;
-	else
-		return 0;
+    return x>=3 && x<=10 && y>=3 && y<=10;
 }
 
 
@@ -385,8 +377,13 @@ int ** random_computer(int dimensione, int ** matrix) {
 			i--; //ripeti l'operazione, perchè già presente
 	}
 
+	// Return ??
 }
 
+/* 
+ * Stampa a schermo il campo del giocatore (in chiaro) e del nemico (se nemico!=NULL)(solo le caselle scoperte)
+ * 
+ */
 void stampa(int dim, int **giocatore, int **nemico){
     /* Esempio 3x3
      * 0 = vuoto
@@ -400,14 +397,18 @@ void stampa(int dim, int **giocatore, int **nemico){
      * 2|0X1   2|0X?
      */
     
-    
     // Prima riga (lettere)
-    puts("\n  ");
+    printf("  ");
     for(int i=0; i<dim; i++)
         putchar(65 + i); // A, B, C, ...
-    puts("     ");
-    for(int i=0; i<dim; i++)
-        putchar(65 + i); // A, B, C, ...
+    
+    if(nemico){
+        printf("     ");
+        for(int i=0; i<dim; i++)
+            putchar(65 + i); // A, B, C, ...
+    }
+    
+    putchar('\n');
         
     // Le altre righe
     for(int i=0; i<dim; i++){
@@ -416,18 +417,13 @@ void stampa(int dim, int **giocatore, int **nemico){
         for(int k=0; k <dim; k++)
             printf("%d",giocatore[i][k]);
         
-        printf("   %d|",i);
-        //Le colonne della tabella nemico
-        for(int k=0; k<dim; k++)
-            printf("%d", nemico[i][k]);
-        putchar('\n');
-            
-            
+        if(nemico){
+            printf("   %d|",i);
+            //Le colonne della tabella nemico
+            for(int k=0; k<dim; k++)
+                printf("%d", nemico[i][k]);
+        }
         
+        putchar('\n');
     }
-    
-    
-    
-    // ...
-    
 }
