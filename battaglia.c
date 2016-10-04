@@ -4,29 +4,27 @@
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
-#include<time.h> 
-
-typedef char bool;
+#include<time.h>
 
 // Messaggi di debug abilitati/disabilitati
-bool debug_enable = 0;
+int debug_enable = 0;
 
 void debug(const char *testo);
-bool ** allocaCampo(int dimensione);
-void stampa(int dimensione, bool **giocatore, bool **scoperta);
+int ** allocaCampo(int dimensione);
+void stampa(int dimensione, int **giocatore, int **nemico);
 
 int main (int argc, char **argv){
     //Dimensione del campo di battaglia
     int dim = 0;
     
     // Puntatori ai campi di battaglia (computer, giocatore, e parte della mappa del computer scoperta dal giocatore
-    bool **computer, **giocatore, **scoperta;
+    int **computer, **giocatore;
 
     // Navi abilitate nella partita
     //      1x1     2x1     3x1     4x1
-    bool piccola, media, grande, enorme;
+    int piccola, media, grande, enorme;
     
-    bool fine = 0;
+    int fine = 0;
     
     debug("Controllo i parametri");
     if(argc > 1)
@@ -47,7 +45,6 @@ int main (int argc, char **argv){
     debug("Alloco i campi di battaglia");
     computer = allocaCampo(dim);
     giocatore = allocaCampo(dim);
-    scoperta = allocaCampo(dim);
     
     debug("Calcolo delle navi necessarie");
     // dim=2 => Solo nave 1x1
@@ -67,7 +64,7 @@ int main (int argc, char **argv){
     
     do{
         debug("Stampo i campi di battaglia");
-        stampa(dim, giocatore, scoperta);
+        stampa(dim, giocatore, computer);
         
         debug("Richiesta mossa giocatore");
         // ...
@@ -88,7 +85,6 @@ int main (int argc, char **argv){
     debug("Dealloco i campi di battaglia");
     free(computer);
     free(giocatore);
-    free(scoperta);
     
     return 0;
 }
@@ -102,44 +98,60 @@ void update() {
 	printf("//box//");
 }
 
-bool ** allocaCampo(int dim){
-    bool ** matrice = (bool**) malloc(dim * dim * sizeof(bool));
+int ** allocaCampo(int dim){
+    int ** matrice = (int**) malloc(dim * sizeof(int*));
     
-    debug("Svuoto il campo");
-    for(int i=0; i<dim; i++)
+    for(int i=0; i<dim; i++){
+        matrice[i] = (int *) malloc(dim*sizeof(int));
+        
         for(int k=0; k<dim; k++)
             matrice[i][k] = 0;
-        
+    }
+    
     return matrice;
 }
 
-void stampa(int dim, bool **gioc, bool **nem){
-    // 186 = ║
-    // 187 = ╗ 
-    // 188 = ╝
-    // 200 = ╚
-    // 201 = ╔
-    // 202 = ╩
-    // 203 = ╦
-    // 205 = ═
+void stampa(int dim, int **giocatore, int **nemico){
+    /* Esempio 3x3
+     * 0 = vuoto
+     * 1 = nave
+     * X = nave colpita
+     * ? = sconosciuto
+     * 
+     *   ABC     ABC
+     * 0|010   0|??0
+     * 1|000   1|???
+     * 2|0X1   2|0X?
+     */
     
-    putchar(201);
+    
+    // Prima riga (lettere)
+    puts("\n  ");
     for(int i=0; i<dim; i++)
-        putchar(205);
-    putchar(203);
+        putchar(65 + i); // A, B, C, ...
+    puts("     ");
     for(int i=0; i<dim; i++)
-        putchar(205);
-    putchar(187);
+        putchar(65 + i); // A, B, C, ...
+        
+    // Le altre righe
+    for(int i=0; i<dim; i++){
+        printf("%d|",i);
+        // Le colonne della tabella giocatore
+        for(int k=0; k <dim; k++)
+            printf("%d",giocatore[i][k]);
+        
+        printf("   %d|",i);
+        //Le colonne della tabella nemico
+        for(int k=0; k<dim; k++)
+            printf("%d", nemico[i][k]);
+        putchar('\n');
+            
+            
+        
+    }
     
     
     
-    
-    putchar(200);
-    for(int i=0; i<dim; i++)
-        putchar(205);
-    putchar(202);
-    for(int i=0; i<dim; i++)
-        putchar(205);
-    putchar(188);
+    // ...
     
 }
