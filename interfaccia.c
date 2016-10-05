@@ -10,7 +10,7 @@ void debug(const char *testo){
  * Stampa a schermo il campo del giocatore (in chiaro) e del nemico (se nemico!=NULL)(solo le caselle scoperte)
  * 
  */
-void stampa(int dim, int **giocatore, int **nemico){
+void stampa(const int dim, int **giocatore, int **nemico){
     /* Esempio 3x3
      * 0 = vuoto
      * 1 = nave
@@ -68,4 +68,34 @@ void stampa(int dim, int **giocatore, int **nemico){
     }
     
     putchar('\n');
+}
+
+int chiediNumero(const char * testo){
+    int output = -1;
+
+    if(testo)
+        printf(testo);
+
+    scanf("%d", &output);
+    getchar(); // Raccoglie il fine riga
+
+    return output;
+}
+
+int chiediLettera(const char * testo){
+    char lettera;
+    int output = -1;
+
+    if(testo)
+        printf(testo);
+
+    scanf("%c", &lettera);
+    getchar(); // Raccoglie il fine riga
+
+    if(lettera>='a' && lettera<='z')
+        output = lettera - 'a';
+    else if(lettera>='A' && lettera<='Z')
+        output = lettera - 'A';
+
+    return output;
 }

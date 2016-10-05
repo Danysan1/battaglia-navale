@@ -154,7 +154,6 @@ int ** allocaCampo(int dim){
 int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 
 	int i,k,piccole=0, medie=0, grandi=0, enormi=0, verso, x, y;
-	char c, lettere[22]="abcdefghilmnopqrstuvz";
 	
 	stampa(dimensione,matrix,NULL);
 
@@ -169,20 +168,14 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 	
 	for(i=0; i<piccole; i++) {
 		printf("Inserimento piccole (1) \n");
-		printf("inserire riga(numero): ");
-		scanf("%d", &x);
+        x=chiediNumero("inserire riga(numero): ");
 
-		printf("inserire colonna(lettera): ");
-		scanf("%c", &c);/// <------------------------SALTA LA SCANF?!?!?!?
-
-		for(k=0; k<22; k++)
-			if(lettere[k]==c)
-				y=k;
-
+        y=chiediLettera("inserire colonna(lettera): ");
+        
 		if(matrix[x][y]==0 && check(x,y)==1 )
 			matrix[x][y]=1;
 		else {
-			debug("posizione già occupata o inserimento errato");
+			printf("posizione (%d,%d) già occupata o inserimento errato",x,y);
 			i--; //faccio ripetere l'operazione
 		}
 		stampa(dimensione,matrix,NULL);
@@ -193,19 +186,11 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 	//inserimento medie
 	for(i=0; i<medie; i++) {
 		printf("Inserimento medie (2) \n");
-		printf("inserire riga(numero): ");
-		scanf("%d", &x);
+        x=chiediNumero("inserire riga(numero): ");
 
-		printf("inserire colonna(lettera): ");
-		scanf("%c", &c); /// <------------------------SALTA LA SCANF?!?!?!?
-
-		for(k=0; k<22; k++)
-			if(lettere[k]==c)
-				y=k;
+        y=chiediLettera("inserire colonna(lettera): ");
 	
-		printf("inserire verso(1-orizzontale , 0-verticale): ");
-		scanf("%d", &verso);
-		
+        verso=chiediNumero("inserire verso(1-orizzontale , 0-verticale): ");
 		
 		if(matrix[x][y]==0 && check(x,y)==1 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=2;
@@ -216,7 +201,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			matrix[x+1][y]=2;
 		}
 		else {
-			debug("posizione già occupata o inserimento errato");
+			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
 			i--; //faccio ripetere l'operazione
 		}
 		stampa(dimensione,matrix,NULL);
@@ -227,19 +212,11 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 	//inserimento grandi
 	for(i=0; i<grandi; i++) {
 		printf("Inserimento grandi (3) \n");
-		printf("inserire riga(numero): ");
-		scanf("%d", &x);
+        x=chiediNumero("inserire riga(numero): ");
 
-		printf("inserire colonna(lettera): ");
-		scanf("%c", &c);/// <------------------------SALTA LA SCANF?!?!?!?
+        y=chiediLettera("inserire colonna(lettera): ");
 
-		for(k=0; k<22; k++)
-			if(lettere[k]==c)
-				y=k;
-	
-		printf("inserire verso(1-orizzontale , 0-verticale): ");
-		scanf("%d", &verso);
-		
+        verso=chiediNumero("inserire verso(1-orizzontale , 0-verticale): ");
 		
 		if(matrix[x][y]==0 && check(x,y)==1 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0 
 			&& matrix[x][y+2]==0){ //controllo posizioni adiacenti libere
@@ -254,7 +231,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			matrix[x+2][y]=3;
 		}
 		else {
-			debug("posizione già occupata o inserimento errato");
+			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
 			i--; //faccio ripetere l'operazione
 		}
 		stampa(dimensione,matrix,NULL);
@@ -265,19 +242,11 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 	//inserimento enormi
 	for(i=0; i<enormi; i++) {
 		printf("Inserimento enormi (4) \n");
-		printf("inserire riga(numero): ");
-		scanf("%d", &x);
+        x=chiediNumero("inserire riga(numero): ");
 
-		printf("inserire colonna(lettera): ");
-		scanf("%c", &c);/// <------------------------SALTA LA SCANF?!?!?!?
-
-		for(k=0; k<22; k++)
-			if(lettere[k]==c)
-				y=k;
+        y=chiediLettera("inserire colonna(lettera): ");
 	
-		printf("inserire verso(1-orizzontale , 0-verticale): ");
-		scanf("%d", &verso);
-		
+        verso=chiediNumero("inserire verso(1-orizzontale , 0-verticale): ");
 		
 		if(matrix[x][y]==0 && check(x,y)==1 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0 
 			&& matrix[x][y+2]==0 && matrix[x][y+3]==0){ //controllo posizioni adiacenti libere
@@ -294,7 +263,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			matrix[x+3][y]=4;
 		}
 		else {
-			debug("posizione già occupata o inserimento errato");
+			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
 			i--; //faccio ripetere l'operazione
 		}
 		stampa(dimensione,matrix,NULL);
