@@ -138,10 +138,10 @@ void cambio(int x, int y, int **matrix) {
 	int num=matrix[x][y];
 
 	switch(num) {
-		case 1: matrix[x][y]=-1;
-		case 2: matrix[x][y]=-2;
-		case 3: matrix[x][y]=-3;
-		case 4: matrix[x][y]=-4;
+		case 1: matrix[x][y]=-1; break;
+		case 2: matrix[x][y]=-2; break;
+		case 3: matrix[x][y]=-3; break;
+		case 4: matrix[x][y]=-4; break;
 	}
 }
 
