@@ -138,20 +138,21 @@ void cambio(int x, int y, int **matrix) {
 	int num=matrix[x][y];
 
 	switch(num) {
+		case 1: matrix[x][y]=-1;
 		case 2: matrix[x][y]=-2;
 		case 3: matrix[x][y]=-3;
 		case 4: matrix[x][y]=-4;
-		default: matrix[x][y]=0;
 	}
 }
 
 int calcolo_esito_giocatore(int dimensione, int **matrix) {
-	int i,k,res=0;
+	int i,k,res1=0;
 
 	for(i=0; i<dimensione; i++)
 		for(k=0; k<dimensione; k++)
-			res+=matrix[i][k];
-	if(somma_matrice_computer == -res)
+			res1+=matrix[i][k];
+	printf("**SUM MATRIX COMPUTER ( - )** %d\n",res1);
+	if(somma_matrice_computer == -res1)
 		return 1;
 	else
 		return 0;
@@ -179,16 +180,17 @@ int mossa_computer(int **giocatore, int **gioc_scoperti, int dimensione){
 	
 	gioc_scoperti[x][y]=1;
 
-	return calcolo_esito_giocatore(dimensione, giocatore);
+	return calcolo_esito_computer(dimensione, giocatore);
 }
 
 int calcolo_esito_computer(int dimensione, int **matrix) {
-	int i,k,res=0;
+	int i,k,res2=0;
 
 	for(i=0; i<dimensione; i++)
 		for(k=0; k<dimensione; k++)
-			res+=matrix[i][k];
-	if(somma_matrice_giocatore == -res)
+			res2+=matrix[i][k];
+	printf("**SUM MATRIX PLAYER ( - )** %d\n",res2);
+	if(somma_matrice_giocatore == -res2)
 		return 2;
 	else
 		return 0;
@@ -351,14 +353,13 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 		}
 		
 	}
-
-	printf("=================================\n");
 	
 	//fondamentale per il meccanismo di determinazione dell'esito, controllato per ora con meccanismo elementare
 	for(i=0; i<dimensione; i++)
 		for(k=0; k<dimensione; k++)
 			somma_matrice_giocatore+=matrix[i][k];
 
+	printf("**SUM MATRIX PLAYER** %d\n",somma_matrice_giocatore);
 
 	return matrix;
 }
@@ -466,6 +467,7 @@ int ** random_computer(int dimensione, int ** matrix) {
 		for(k=0; k<dimensione; k++)
 			somma_matrice_computer+=matrix[i][k];
 
+	printf("**SUM MATRIX COMPUTER** %d\n",somma_matrice_computer);
 	return matrix;
 }
 
