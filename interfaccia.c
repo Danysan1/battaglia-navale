@@ -99,3 +99,11 @@ int chiediLettera(const char * testo){
 
     return output;
 }
+
+void annunciaVittoria(){
+    printf("\n\tHAI VINTO!!\n"); 
+}
+
+void annunciaSconfitta(){
+    printf("\n\tHA VINTO IL COMPUTER!\n");
+}

@@ -58,20 +58,16 @@ int ** sys_mtx; //servirà al sistema per evitare di colpire soliti punti (vd pi
 
 
 int main (int argc, char **argv){
-    int dim = 0, esito = 0;
-    int **computer, **giocatore;
+    int dim = 0, // Dimensione del campo di battaglia
+		esito = 0; // 0->Partita in corso; 1->Ha vinto il giocatore; 2->Ha vinto il computer
+    int **computer, **giocatore; // Campi di battaglia del computer e del giocatore
     
     debug("Controllo i parametri");
     if(argc > 1)
         dim=atoi(argv[1]);
-    
 
-    while(dim < 3 || dim > 10){
-        debug("Chiedo la dimensione");
-        printf("Inserire la dimensione (fra 2 e 10): ");
-        scanf("%d", &dim);
-    }
-    debug("Dimensione ottenuta");
+    while(dim < 3 || dim > 10)
+        dim=chiediNumero("Inserire la dimensione (fra 2 e 10): ");
     
     printf("Creazione del campo di battaglia %d x %d\n", dim, dim);
     
@@ -86,11 +82,6 @@ int main (int argc, char **argv){
     debug("Posizionamento navi computer");
     computer = random_computer(dim,computer);
     
-    /*
-    * esito == 1 VINCE GIOCATORE 
-    * esito == 2 VINCE COMPUTER 
-    * esito == 0 nessuno ancora
-    */
     do{
         debug("Stampo i campi di battaglia"); //-------> NELLA STAMPA MI FAI VEDERE IL CAMPO AVVERSARIO!?!?! :-S 
         stampa(dim, giocatore, computer);
@@ -98,7 +89,7 @@ int main (int argc, char **argv){
 	debug("Richiesta mossa giocatore");
         esito = mossa_giocatore(computer, giocatore, dim);
 
-	if(esito == 1){ 
+	if(esito != 1){ 
         	debug("Calcolo mossa computer");
        		esito = mossa_computer(computer, giocatore, dim);
         }
@@ -106,8 +97,14 @@ int main (int argc, char **argv){
         
     } while (esito == 0); 
     
-	//----> FUNZIONE GRAFICA ANNUNCIA VINCITORE DA VARIABILE ESITO QUANDO SI ESCE DA LOOP
-	printf("VINTO :-)\n"); //provvisoria
+	debug("Annuncio l'esito");
+	stampa(dim, giocatore, computer);
+	if(esito == 1)
+		annunciaVittoria();
+	else if(esito == 2)
+		annunciaSconfitta();
+	
+	debug("Dealloco i campi di battaglia");
 	deallocazione(computer,dim);
 	deallocazione(giocatore,dim);
 	deallocazione(sys_mtx, dim);
@@ -127,8 +124,6 @@ int mossa_giocatore(int **computer, int **giocatore, int dimensione){
 	if(computer[x][y]!=0 && computer[x][y]>0){
 		printf("GIOCATORE COLPISCE NAVE COMPUTER!\n");
 		cambio(x,y,computer);
-		stampa(dimensione, giocatore, computer); //--------------> HO BISOGNO DI DIRTI COSA DEVI PLOTTARE, UNO 0 O UNA NAVE
-	
 	} else 
 		printf("GIOCATORE COLPISCE NIENTE!\n");
 	
@@ -177,8 +172,6 @@ int mossa_computer(int **computer, int **giocatore, int dimensione){
 		printf("COMPUTER COLPISCE NAVE GIOCATORE!\n");
 		cambio(x,y,giocatore);
 		sys_mtx[x][y]=1;
-		stampa(dimensione, giocatore, computer); //--------------> HO BISOGNO DI DIRTI COSA DEVI PLOTTARE, UNO 0 O UNA NAVE
-	
 	} else{
 		printf("COMPUTER COLPISCE NIENTE!\n");
 		sys_mtx[x][y]=1;
@@ -230,10 +223,6 @@ int ** allocaCampo(int dim){
 /*
 * chiede all'utente di inserire le navi nella griglia di battaglia, proporzionalmente al numero di caselle scelte
 * ps si spera in un utente con un Q.I.>0, sebbene vengano supportati casi di Q.I.<0 [livello "grande fratello"]
-*
-*    ATTENZIONE: --> SI RICHIEDI L'INSERIMENTO DI SUPPORTO GRAFICO NEI PUNTI SPECIFICATI
-*		 --> STAMPA PRIMA DELL'INSERIMENTO, in modo che utente possa digitare .. a1..b4.. ecc ecc .. per poi essere trasdotti
-*    STATO: incompleta
 */
 
 int ** posizionamento_giocatore(int dimensione, int ** matrix) {
