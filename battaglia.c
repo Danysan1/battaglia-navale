@@ -44,23 +44,22 @@ void deallocazione(int ** matrice, int dim); // Dealloca una matrice quadrata de
 int ** random_computer(int dimensione, int ** matrix); // Riempie la matrice con navi posizionate casualmente
 int ** posizionamento_giocatore(int dimensione, int ** matrix); // Chiede all'utente di inserire le navi nella griglia di battaglia
 int check(int x, int y); // Controlla che l'inserimento sia un numero compreso nel range valido
-
+int calcolo_esito_giocatore(int dimensione, int **matrix);
+int calcolo_esito_computer(int dimensione, int **matrix);
+void cambio(int x, int y, int **matrix); 
 
 //funzioni di interazione utente
-int mossa_giocatore(int **computer, int **giocatore);
-int mossa_computer(int **computer, int **giocatore);
+int mossa_giocatore(int **computer, int **giocatore, int dimensione);
+int mossa_computer(int **computer, int **giocatore, int dimensione);
+
+int somma_matrice_computer=0;
+int somma_matrice_giocatore=0;
+int ** sys_mtx; //servirà al sistema per evitare di colpire soliti punti (vd piu avanti)
 
 
 int main (int argc, char **argv){
-    int dim = 0,  // Dimensione del campo di battaglia
-        fine = 0, // 0 => Partita in corso, 1 => Partita finita
-        esito = 0; // 0 => Vittoria computer, 1 => Vittoria giocatore
-        
-    int **computer, **giocatore; // Campi di battaglia del computer e del giocatore
-    /**
-     * 
-     * 
-     */
+    int dim = 0, esito = 0;
+    int **computer, **giocatore;
     
     debug("Controllo i parametri");
     if(argc > 1)
@@ -79,6 +78,7 @@ int main (int argc, char **argv){
     debug("Alloco i campi di battaglia");
     computer = allocaCampo(dim);
     giocatore = allocaCampo(dim);
+    sys_mtx = allocaCampo(dim);
     
     debug("Posizionamento navi giocatore");
     giocatore = posizionamento_giocatore(dim,giocatore);
@@ -86,34 +86,117 @@ int main (int argc, char **argv){
     debug("Posizionamento navi computer");
     computer = random_computer(dim,computer);
     
+    /*
+    * esito == 1 VINCE GIOCATORE 
+    * esito == 2 VINCE COMPUTER 
+    * esito == 0 nessuno ancora
+    */
     do{
-        debug("Stampo i campi di battaglia");
+        debug("Stampo i campi di battaglia"); //-------> NELLA STAMPA MI FAI VEDERE IL CAMPO AVVERSARIO!?!?! :-S 
         stampa(dim, giocatore, computer);
+
+	debug("Richiesta mossa giocatore");
+        esito = mossa_giocatore(computer, giocatore, dim);
+
+	if(esito == 1){ 
+        	debug("Calcolo mossa computer");
+       		esito = mossa_computer(computer, giocatore, dim);
+        }
+	printf("=======================================\n");
         
-        debug("Richiesta mossa giocatore");
-        esito = mossa_giocatore(computer, giocatore);
-        
-        debug("Calcolo mossa computer");
-        esito = mossa_computer(computer, giocatore);
-        
-        
-    } while (esito == 0); //--> successivamente un flag di esito [da definire] decreterà vittoria usr o sys
+    } while (esito == 0); 
     
-   deallocazione(computer,dim);
-   deallocazione(giocatore,dim);
+	//----> FUNZIONE GRAFICA ANNUNCIA VINCITORE DA VARIABILE ESITO QUANDO SI ESCE DA LOOP
+	printf("VINTO :-)\n"); //provvisoria
+	deallocazione(computer,dim);
+	deallocazione(giocatore,dim);
+	deallocazione(sys_mtx, dim);
     
     return 0;
 }
 
 /*
-* funzioni da definire, si richiede che venga integrato prima ambiente grafico
+* FUNZIONE PER LA GESTIONE DI UNA MOSSA FATTA DAL GIOCATORE + CONTROLLO E CAMBIAMENTO SULLA MATRICE COMPUTER
 */
-int mossa_giocatore(int **computer, int **giocatore){
-	return 0;
+int mossa_giocatore(int **computer, int **giocatore, int dimensione){
+	int x,y;
+	x=chiediNumero("Inserire riga(numero) del campo avversario: ");
+
+        y=chiediLettera("Inserire colonna(lettera) del campo avversario: ");
+
+	if(computer[x][y]!=0){
+		printf("GIOCATORE COLPISCE NAVE COMPUTER!\n");
+		cambio(x,y,computer);
+		stampa(dimensione, giocatore, computer); //--------------> HO BISOGNO DI DIRTI COSA DEVI PLOTTARE, UNO 0 O UNA NAVE
+	
+	} else 
+		printf("GIOCATORE COLPISCE NIENTE!\n");
+	
+
+	return calcolo_esito_giocatore(dimensione, computer);
 }
 
-int mossa_computer(int **computer, int **giocatore){
-	return 0;
+void cambio(int x, int y, int **matrix) {
+	int num=matrix[x][y];
+
+	switch(num) {
+		case 2: matrix[x][y]=-2;
+		case 3: matrix[x][y]=-3;
+		case 4: matrix[x][y]=-4;
+		default: matrix[x][y]=0;
+	}
+}
+
+int calcolo_esito_giocatore(int dimensione, int **matrix) {
+	int i,k,res=0;
+
+	for(i=0; i<dimensione; i++)
+		for(k=0; k<dimensione; k++)
+			res+=matrix[i][k];
+	if(somma_matrice_computer == -res)
+		return 1;
+	else
+		return 0;
+}
+
+/*
+* FUNZIONE PER LA GESTIONE DI UNA MOSSA FATTA DAL COMPUTER + CONTROLLO E CAMBIAMENTO SULLA MATRICE GIOCATORE
+* sys_mtx è una matrice di sistema fatta di 0 ed 1 .. 0 laddove non ha ancora colpito, 1 se li ha colpito
+*/
+
+int mossa_computer(int **computer, int **giocatore, int dimensione){
+	int x,y;
+	srand(time(NULL)*time(NULL));
+	
+	do{ //continui a cambiare finchè becchi una posizione gia COLPITA
+		x=rand()%dimensione+0;
+		y=rand()%dimensione+0;
+	}while( sys_mtx[x][y]==1 );
+
+	if(computer[x][y]!=0){
+		printf("COMPUTER COLPISCE NAVE GIOCATORE!\n");
+		cambio(x,y,giocatore);
+		sys_mtx[x][y]=1;
+		stampa(dimensione, giocatore, computer); //--------------> HO BISOGNO DI DIRTI COSA DEVI PLOTTARE, UNO 0 O UNA NAVE
+	
+	} else{
+		printf("COMPUTER COLPISCE NIENTE!\n");
+		sys_mtx[x][y]=1;
+	}
+
+	return calcolo_esito_giocatore(dimensione, giocatore);
+}
+
+int calcolo_esito_computer(int dimensione, int **matrix) {
+	int i,k,res=0;
+
+	for(i=0; i<dimensione; i++)
+		for(k=0; k<dimensione; k++)
+			res+=matrix[i][k];
+	if(somma_matrice_giocatore == -res)
+		return 2;
+	else
+		return 0;
 }
 
 
@@ -143,6 +226,7 @@ int ** allocaCampo(int dim){
     
     return matrice;
 }
+
 /*
 * chiede all'utente di inserire le navi nella griglia di battaglia, proporzionalmente al numero di caselle scelte
 * ps si spera in un utente con un Q.I.>0, sebbene vengano supportati casi di Q.I.<0 [livello "grande fratello"]
@@ -151,6 +235,7 @@ int ** allocaCampo(int dim){
 *		 --> STAMPA PRIMA DELL'INSERIMENTO, in modo che utente possa digitare .. a1..b4.. ecc ecc .. per poi essere trasdotti
 *    STATO: incompleta
 */
+
 int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 
 	int i,k,piccole=0, medie=0, grandi=0, enormi=0, verso, x, y;
@@ -171,14 +256,15 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
         x=chiediNumero("inserire riga(numero): ");
 
         y=chiediLettera("inserire colonna(lettera): ");
-        
-		if(matrix[x][y]==0 && check(x,y)==1 )
+		if(matrix[x][y]==0 && check(x,y)==1 ){
 			matrix[x][y]=1;
+			stampa(dimensione,matrix,NULL);
+		}
 		else {
 			printf("posizione (%d,%d) già occupata o inserimento errato",x,y);
 			i--; //faccio ripetere l'operazione
 		}
-		stampa(dimensione,matrix,NULL);
+		
 	}
 
 	printf("=================================\n");
@@ -195,16 +281,18 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 		if(matrix[x][y]==0 && check(x,y)==1 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=2;
 			matrix[x][y+1]=2;
+			stampa(dimensione,matrix,NULL);
 		}
 		else if(matrix[x][y]==0 && check(x,y)==1 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=2;
 			matrix[x+1][y]=2;
+			stampa(dimensione,matrix,NULL);
 		}
 		else {
 			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
 			i--; //faccio ripetere l'operazione
 		}
-		stampa(dimensione,matrix,NULL);
+		
 	}
 	
 	printf("=================================\n");
@@ -223,18 +311,20 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			matrix[x][y]=3;
 			matrix[x][y+1]=3;
 			matrix[x][y+2]=3;
+			stampa(dimensione,matrix,NULL);
 		}
 		else if(matrix[x][y]==0 && check(x,y)==1 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0 
 			&& matrix[x+2][y]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=3;
 			matrix[x+1][y]=3;
 			matrix[x+2][y]=3;
+			stampa(dimensione,matrix,NULL);
 		}
 		else {
 			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
 			i--; //faccio ripetere l'operazione
 		}
-		stampa(dimensione,matrix,NULL);
+		
 	}
 	
 	printf("=================================\n");
@@ -254,6 +344,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			matrix[x][y+1]=4;
 			matrix[x][y+2]=4;
 			matrix[x][y+3]=4;
+			stampa(dimensione,matrix,NULL);
 		}
 		else if(matrix[x][y]==0 && check(x,y)==1 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0 
 			&& matrix[x+2][y]==0 && matrix[x+3][y]==0){ //controllo posizioni adiacenti libere
@@ -261,16 +352,23 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 			matrix[x+1][y]=4;
 			matrix[x+2][y]=4;
 			matrix[x+3][y]=4;
+			stampa(dimensione,matrix,NULL);
 		}
 		else {
 			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
 			i--; //faccio ripetere l'operazione
 		}
-		stampa(dimensione,matrix,NULL);
+		
 	}
 
 	printf("=================================\n");
 	
+	//fondamentale per il meccanismo di determinazione dell'esito, controllato per ora con meccanismo elementare
+	for(i=0; i<dimensione; i++)
+		for(k=0; k<dimensione; k++)
+			somma_matrice_giocatore+=matrix[i][k];
+
+
 	return matrix;
 }
 
@@ -296,7 +394,7 @@ int check(int x,int y) {
 */
 
 int ** random_computer(int dimensione, int ** matrix) { 
-	int i,piccole=0, medie=0, grandi=0, enormi=0, posI, posK, verso;
+	int i,k,piccole=0, medie=0, grandi=0, enormi=0, posI, posK, verso;
 	srand(time(NULL)*time(NULL));
 
 	piccole=dimensione/2;
@@ -371,6 +469,11 @@ int ** random_computer(int dimensione, int ** matrix) {
 		else
 			i--; //ripeti l'operazione, perchè già presente
 	}
+
+	//fondamentale per il meccanismo di determinazione dell'esito, controllato per ora con meccanismo elementare
+	for(i=0; i<dimensione; i++)
+		for(k=0; k<dimensione; k++)
+			somma_matrice_computer+=matrix[i][k];
 
 	return matrix;
 }
