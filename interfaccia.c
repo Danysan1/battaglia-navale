@@ -10,7 +10,7 @@ void debug(const char *testo){
  * Stampa a schermo il campo del giocatore (in chiaro) e del nemico (se nemico!=NULL)(solo le caselle scoperte)
  * 
  */
-void stampa(const int dim, int **giocatore, int **nemico){
+void stampa(const int dim, int **giocatore, int **nemico, int **nemico_scoperti){
     /* Esempio 3x3
      * 0 = vuoto
      * 1 = nave
@@ -54,14 +54,26 @@ void stampa(const int dim, int **giocatore, int **nemico){
             putchar('\t');
         printf("\t%d|",i);
         // Le colonne della tabella giocatore
-        for(int k=0; k <dim; k++)
-            printf("%d",giocatore[i][k]);
+        for(int k=0; k <dim; k++){
+            if(giocatore[i][k] < 0) // Nave colpita
+                putchar('X');
+            else
+                printf("%d",giocatore[i][k]);
+        }
         
         if(nemico){
             printf("\t%d|",i);
             //Le colonne della tabella nemico
-            for(int k=0; k<dim; k++)
-                printf("%d", nemico[i][k]);
+            for(int k=0; k<dim; k++){
+                if( ! nemico_scoperti) // LA matrice delle caselle non è disponibile, stampa direttamente
+                    printf("%d", nemico[i][k]);
+                else if( ! nemico_scoperti[i][k]) // Casella non ancora scoperta
+                    putchar('?');
+                else if(nemico[i][k] < 0) // Nave colpita
+                    putchar('X');
+                else
+                    printf("%d", nemico[i][k]);
+            }
         }
         
         putchar('\n');
