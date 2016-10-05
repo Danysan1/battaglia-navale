@@ -4,6 +4,7 @@
 #include<math.h>
 #include<time.h>
 
+#include "interfaccia.h"
 
 /* ** Daniele Santini, Giuseppe Tempesta **
 *
@@ -28,8 +29,6 @@
 * (Al momento di caricare le modifiche invece di "git push" bisognerà usare "git push --force")
 */
 
-int debug_enable = 0; // Messaggi di debug abilitati/disabilitati
-void debug(const char *testo); // Se il debug è abilitato stampa a schermo il messaggio di debug
 
 // funzioni per l'allocazione dinamica della memoria
 int ** allocaCampo(int dimensione); // Alloca e restituisce una matrice quadrata della dimensione indicata
@@ -40,8 +39,6 @@ int ** random_computer(int dimensione, int ** matrix); // Riempie la matrice con
 int ** posizionamento_giocatore(int dimensione, int ** matrix); // Chiede all'utente di inserire le navi nella griglia di battaglia
 int check(int x, int y); // Controlla che l'inserimento sia un numero compreso nel range valido
 
-//funzioni grafiche
-void stampa(int dimensione, int **giocatore, int **nemico); // Stampa a schermo i campi del giocatore e del nemico
 
 //funzioni di interazione utente
 int mossa_giocatore(int **computer, int **giocatore);
@@ -63,8 +60,6 @@ int main (int argc, char **argv){
     if(argc > 1)
         dim=atoi(argv[1]);
     
-    if(argc > 2)
-        debug_enable = atoi(argv[2]);
 
     while(dim < 3 || dim > 10){
         debug("Chiedo la dimensione");
@@ -110,14 +105,11 @@ int main (int argc, char **argv){
 int mossa_giocatore(int **computer, int **giocatore){
 	return 0;
 }
+
 int mossa_computer(int **computer, int **giocatore){
 	return 0;
 }
 
-void debug(const char *testo){
-    if(debug_enable)
-        printf("DEBUG: %s\n", testo);
-}
 
 /*
 * dealloca ogni variabile allocata dinamicamente
@@ -138,9 +130,9 @@ int ** allocaCampo(int dim){
     for(int i=0; i<dim; i++)
         matrice[i] = (int *) malloc(dim * sizeof(int));
         
-	for(int i=0; i<dim; i++)
-       		for(int k=0; k<dim; k++)
-            		matrice[i][k] = 0;
+    for(int i=0; i<dim; i++)
+        for(int k=0; k<dim; k++)
+            matrice[i][k] = 0;
     
     
     return matrice;
@@ -408,50 +400,4 @@ int ** random_computer(int dimensione, int ** matrix) {
 	return matrix;
 }
 
-/* 
- * Stampa a schermo il campo del giocatore (in chiaro) e del nemico (se nemico!=NULL)(solo le caselle scoperte)
- * 
- */
-void stampa(int dim, int **giocatore, int **nemico){
-    /* Esempio 3x3
-     * 0 = vuoto
-     * 1 = nave
-     * X = nave colpita
-     * ? = sconosciuto
-     * 
-     *   ABC     ABC
-     * 0|010   0|??0
-     * 1|000   1|???
-     * 2|0X1   2|0X?
-     */
-    
-    // Prima riga (lettere)
-    printf("  ");
-    for(int i=0; i<dim; i++)
-        putchar(65 + i); // A, B, C, ...
-    
-    if(nemico){
-        printf("     ");
-        for(int i=0; i<dim; i++)
-            putchar(65 + i); // A, B, C, ...
-    }
-    
-    putchar('\n');
-        
-    // Le altre righe
-    for(int i=0; i<dim; i++){
-        printf("%d|",i);
-        // Le colonne della tabella giocatore
-        for(int k=0; k <dim; k++)
-            printf("%d",giocatore[i][k]);
-        
-        if(nemico){
-            printf("   %d|",i);
-            //Le colonne della tabella nemico
-            for(int k=0; k<dim; k++)
-                printf("%d", nemico[i][k]);
-        }
-        
-        putchar('\n');
-    }
-}
+
