@@ -124,7 +124,7 @@ int mossa_giocatore(int **computer, int **giocatore, int dimensione){
 
         y=chiediLettera("Inserire colonna(lettera) del campo avversario: ");
 
-	if(computer[x][y]!=0){
+	if(computer[x][y]!=0 && computer[x][y]>0){
 		printf("GIOCATORE COLPISCE NAVE COMPUTER!\n");
 		cambio(x,y,computer);
 		stampa(dimensione, giocatore, computer); //--------------> HO BISOGNO DI DIRTI COSA DEVI PLOTTARE, UNO 0 O UNA NAVE
@@ -173,7 +173,7 @@ int mossa_computer(int **computer, int **giocatore, int dimensione){
 		y=rand()%dimensione+0;
 	}while( sys_mtx[x][y]==1 );
 
-	if(computer[x][y]!=0){
+	if(giocatore[x][y]!=0 && giocatore[x][y]>0){
 		printf("COMPUTER COLPISCE NAVE GIOCATORE!\n");
 		cambio(x,y,giocatore);
 		sys_mtx[x][y]=1;
