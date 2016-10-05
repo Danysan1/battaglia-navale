@@ -46,7 +46,6 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix); // Chiede all'ut
 int check(int x, int y); // Controlla che l'inserimento sia un numero compreso nel range valido
 int calcolo_esito_giocatore(int dimensione, int **matrix);
 int calcolo_esito_computer(int dimensione, int **matrix);
-void cambio(int x, int y, int **matrix); 
 
 //funzioni di interazione utente
 int mossa_giocatore(int **computer, int **scoperti, int dimensione);
@@ -125,7 +124,7 @@ int mossa_giocatore(int **computer, int **comp_scoperti, int dimensione){
 
 	if(computer[x][y]>0){
 		printf("GIOCATORE COLPISCE NAVE COMPUTER!\n");
-		cambio(x,y,computer);
+		computer[x][y] = -computer[x][y];
 	} else 
 		printf("GIOCATORE COLPISCE NIENTE!\n");
 	
@@ -134,24 +133,15 @@ int mossa_giocatore(int **computer, int **comp_scoperti, int dimensione){
 	return calcolo_esito_giocatore(dimensione, computer);
 }
 
-void cambio(int x, int y, int **matrix) {
-	int num=matrix[x][y];
-
-	switch(num) {
-		case 1: matrix[x][y]=-1; break;
-		case 2: matrix[x][y]=-2; break;
-		case 3: matrix[x][y]=-3; break;
-		case 4: matrix[x][y]=-4; break;
-	}
-}
-
 int calcolo_esito_giocatore(int dimensione, int **matrix) {
 	int i,k,res1=0;
 
 	for(i=0; i<dimensione; i++)
 		for(k=0; k<dimensione; k++)
 			res1+=matrix[i][k];
+#ifdef debug_enable
 	printf("**SUM MATRIX COMPUTER ( - )** %d\n",res1);
+#endif
 	if(somma_matrice_computer == -res1)
 		return 1;
 	else
@@ -174,7 +164,7 @@ int mossa_computer(int **giocatore, int **gioc_scoperti, int dimensione){
 
 	if(giocatore[x][y]>0){
 		printf("COMPUTER COLPISCE NAVE GIOCATORE!\n");
-		cambio(x,y,giocatore);
+		giocatore[x][y] = -giocatore[x][y];
 	} else
 		printf("COMPUTER COLPISCE NIENTE!\n");
 	
@@ -394,7 +384,7 @@ int ** random_computer(int dimensione, int ** matrix) {
 	grandi=dimensione/4;
 	enormi=dimensione/5;
 	
-	//distribuzione delle piccole
+	debug("distribuzione delle piccole");
 	for(i=0; i<piccole; i++){
 		posI=rand()%dimensione+0;
 		posK=rand()%dimensione+0;
@@ -404,7 +394,7 @@ int ** random_computer(int dimensione, int ** matrix) {
 			i--; //ripeti l'operazione, perchè già presente
 	}
 
-	//distribuzione delle medie
+	debug("distribuzione delle medie");
 	for(i=0; i<medie; i++){
 		posI=rand()%dimensione+0;
 		posK=rand()%dimensione+0;
@@ -420,7 +410,7 @@ int ** random_computer(int dimensione, int ** matrix) {
 			i--; //ripeti l'operazione, perchè già presente
 	}
 
-	//distribuzione delle grandi
+	debug("distribuzione delle grandi");
 	for(i=0; i<grandi; i++){
 		posI=rand()%dimensione+0;
 		posK=rand()%dimensione+0;
@@ -440,7 +430,7 @@ int ** random_computer(int dimensione, int ** matrix) {
 			i--; //ripeti l'operazione, perchè già presente
 	}
 	
-	//distribuzione delle grandi
+	debug("distribuzione delle grandi");
 	for(i=0; i<enormi; i++){
 		posI=rand()%dimensione+0;
 		posK=rand()%dimensione+0;
@@ -466,8 +456,9 @@ int ** random_computer(int dimensione, int ** matrix) {
 	for(i=0; i<dimensione; i++)
 		for(k=0; k<dimensione; k++)
 			somma_matrice_computer+=matrix[i][k];
-
+#ifdef debug_enable
 	printf("**SUM MATRIX COMPUTER** %d\n",somma_matrice_computer);
+#endif
 	return matrix;
 }
 
