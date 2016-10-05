@@ -14,6 +14,12 @@
 *	-> si è modificato qualcosa
 *	-> possibilità di separare il progetto in piu' .c e .h, soluzione troppo compatta in un solo file (da valutare in seguito)
 * 
+* NOTE: Per compilare:
+* gcc battaglia.c interfaccia.c
+* 
+* NOTE: Per compilare, con debug:
+* gcc battaglia.c interfaccia.c -D debug_enable
+* 
 * NOTE: Per scaricare le modifiche fatte da qualcun'altro:
 * git fetch --all
 * git merge [persona]/master
