@@ -46,6 +46,7 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix); // Chiede all'ut
 int check(int x, int y); // Controlla che l'inserimento sia un numero compreso nel range valido
 int calcolo_esito_giocatore(int dimensione, int **matrix);
 int calcolo_esito_computer(int dimensione, int **matrix);
+void reset(int **matrix, int dimensione);
 
 //funzioni di interazione utente
 int mossa_giocatore(int **computer, int **scoperti, int dimensione);
@@ -393,8 +394,10 @@ RESET: current_T=0;
 			i--; //ripeti l'operazione, perchè già presente
 		current_T++;
 		
-		if(current_T > maxT)
+		if(current_T > maxT){
+			reset(matrix, dimensione+1);
 			goto RESET;
+		}
 	}
 
 	//distribuzione delle medie
@@ -413,8 +416,10 @@ RESET: current_T=0;
 			i--; //ripeti l'operazione, perchè già presente
 		current_T++;
 		
-		if(current_T > maxT)
+		if(current_T > maxT){
+			reset(matrix, dimensione+1);
 			goto RESET;
+		}
 	}
 
 	//distribuzione delle grandi
@@ -437,8 +442,10 @@ RESET: current_T=0;
 			i--; //ripeti l'operazione, perchè già presente
 		current_T++;
 		
-		if(current_T > maxT)
+		if(current_T > maxT){
+			reset(matrix, dimensione+1);
 			goto RESET;
+		}
 	}
 	
 	//distribuzione delle grandi
@@ -463,8 +470,10 @@ RESET: current_T=0;
 			i--; //ripeti l'operazione, perchè già presente
 		current_T++;
 		
-		if(current_T > maxT)
+		if(current_T > maxT){
+			reset(matrix, dimensione+1);
 			goto RESET;
+		}
 	}
 
 	//fondamentale per il meccanismo di determinazione dell'esito, controllato per ora con meccanismo elementare
@@ -473,6 +482,13 @@ RESET: current_T=0;
 			somma_matrice_computer+=matrix[i][k];
 
 	return matrix;
+}
+
+void reset(int **matrix, int dimensione) {
+	int i,k;
+	for(i=0; i<dimensione; i++)
+		for(k=0; k<dimensione; k++)
+			matrix[i][k]=0;
 }
 
 
