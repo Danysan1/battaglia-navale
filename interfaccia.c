@@ -1,9 +1,18 @@
 #include "interfaccia.h"
+#include <stdlib.h>
 
 void debug(const char *testo){
 #ifdef debug_enable
         printf("DEBUG: %s\n", testo);
+#else
+        (void)testo; // -Wunused-parameter
 #endif
+}
+
+void legenda(){
+    puts("\t\t0 = Casella di acqua");
+    puts("\t1/2/3/4 = Nave da 1/2/3/4 caselle");
+    puts("X = Nave colpita\t? = Casella sconosciuta");
 }
 
 /* 
@@ -66,13 +75,11 @@ void stampa(const int dim, int **giocatore, int **nemico, int **nemico_scoperti)
             //Le colonne della tabella nemico
             for(int k=0; k<dim; k++){
                 if( ! nemico_scoperti) // LA matrice delle caselle non è disponibile, stampa direttamente
-                    printf("%d", nemico[i][k]);
+                    printf("%d", abs(nemico[i][k]));
                 else if( ! nemico_scoperti[i][k]) // Casella non ancora scoperta
                     putchar('?');
-                else if(nemico[i][k] < 0) // Nave colpita
-                    putchar('X');
                 else
-                    printf("%d", nemico[i][k]);
+                    printf("%d", -nemico[i][k]);
             }
         }
         
@@ -108,6 +115,8 @@ int chiediLettera(const char * testo){
         output = lettera - 'a';
     else if(lettera>='A' && lettera<='Z')
         output = lettera - 'A';
+    else if(lettera>='0' && lettera<='9')
+        output = lettera - '0';
 
     return output;
 }

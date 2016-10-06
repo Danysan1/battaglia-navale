@@ -82,6 +82,8 @@ int main (int argc, char **argv){
     
     debug("Posizionamento navi computer");
     computer = random_computer(dim,computer);
+	
+	legenda();
     
     do{
         debug("Stampo i campi di battaglia");
