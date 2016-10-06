@@ -43,7 +43,7 @@ void deallocazione(int ** matrice, int dim); // Dealloca una matrice quadrata de
 //funzioni di posizionamento e controllo
 int ** random_computer(int dimensione, int ** matrix); // Riempie la matrice con navi posizionate casualmente
 int ** posizionamento_giocatore(int dimensione, int ** matrix); // Chiede all'utente di inserire le navi nella griglia di battaglia
-int check(int x, int y); // Controlla che l'inserimento sia un numero compreso nel range valido
+int check(const int x,const int y,const int dimensione,const int lunghezza,const int orizzontale);//Controlla che la nave inserita stia nella matrice
 int calcolo_esito_giocatore(int dimensione, int **matrix);
 int calcolo_esito_computer(int dimensione, int **matrix);
 void reset(int **matrix, int dimensione);
@@ -140,10 +140,7 @@ int calcolo_esito_giocatore(int dimensione, int **matrix) {
 	for(i=0; i<dimensione; i++)
 		for(k=0; k<dimensione; k++)
 			res1+=matrix[i][k];
-	if(somma_matrice_computer == -res1)
-		return 1;
-	else
-		return 0;
+	return somma_matrice_computer == -res1;
 }
 
 /*
@@ -218,7 +215,7 @@ int ** allocaCampo(int dim){
 
 int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 
-	int i,k,piccole=0, medie=0, grandi=0, enormi=0, verso, x, y;
+	int i,k,piccole=0, medie=0, grandi=0, enormi=0, verso=0, x, y;
 	
 	stampa(dimensione, matrix, NULL, NULL);
 
@@ -232,44 +229,46 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 	//inserimento piccole
 	
 	for(i=0; i<piccole; i++) {
-		printf("Inserimento piccole (1) \n");
+		printf("\nInserimento piccole (1 casella) \n");
+		
         x=chiediNumero("inserire riga(numero): ");
-
         y=chiediLettera("inserire colonna(lettera): ");
-		if(matrix[x][y]==0 && check(x,y)==1 ){
+		
+		if( ! check(x,y,dimensione,1,verso)){ // controllo che la nave stia nella mappa
+			puts("Inserimento non valido");
+			i--; //faccio ripetere l'operazione
+		} else if(matrix[x][y]==0){
 			matrix[x][y]=1;
 			stampa(dimensione, matrix, NULL, NULL);
-		}
-		else {
-			printf("posizione (%d,%d) già occupata o inserimento errato",x,y);
+		} else {
+			puts("Posizione già occupata");
 			i--; //faccio ripetere l'operazione
 		}
-		
 	}
 
 	printf("=================================\n");
 
 	//inserimento medie
 	for(i=0; i<medie; i++) {
-		printf("Inserimento medie (2) \n");
+		printf("\nInserimento medie (2 caselle) \n");
+		
         x=chiediNumero("inserire riga(numero): ");
-
-        y=chiediLettera("inserire colonna(lettera): ");
-	
+        y=chiediLettera("inserire colonna(lettera): ");	
         verso=chiediNumero("inserire verso(1-orizzontale , 0-verticale): ");
 		
-		if(matrix[x][y]==0 && check(x,y)==1 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0){ //controllo posizioni adiacenti libere
+		if( ! check(x,y,dimensione,2,verso)){ // controllo che la nave stia nella mappa
+			puts("Inserimento non valido");
+			i--; //faccio ripetere l'operazione
+		} else if(matrix[x][y]==0 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=2;
 			matrix[x][y+1]=2;
 			stampa(dimensione, matrix, NULL, NULL);
-		}
-		else if(matrix[x][y]==0 && check(x,y)==1 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0){ //controllo posizioni adiacenti libere
+		} else if(matrix[x][y]==0 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=2;
 			matrix[x+1][y]=2;
 			stampa(dimensione, matrix, NULL, NULL);
-		}
-		else {
-			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
+		} else {
+			puts("Posizione già occupata");
 			i--; //faccio ripetere l'operazione
 		}
 		
@@ -280,63 +279,59 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 	
 	//inserimento grandi
 	for(i=0; i<grandi; i++) {
-		printf("Inserimento grandi (3) \n");
+		printf("\nInserimento grandi (3 caselle) \n");
+		
         x=chiediNumero("inserire riga(numero): ");
-
         y=chiediLettera("inserire colonna(lettera): ");
-
         verso=chiediNumero("inserire verso(1-orizzontale , 0-verticale): ");
 		
-		if(matrix[x][y]==0 && check(x,y)==1 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0 
-			&& matrix[x][y+2]==0){ //controllo posizioni adiacenti libere
+		if( ! check(x,y,dimensione,3,verso)){ // controllo che la nave stia nella mappa
+			puts("Inserimento non valido");
+			i--; //faccio ripetere l'operazione
+		} else if(matrix[x][y]==0 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0 && matrix[x][y+2]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=3;
 			matrix[x][y+1]=3;
 			matrix[x][y+2]=3;
 			stampa(dimensione, matrix, NULL, NULL);
-		}
-		else if(matrix[x][y]==0 && check(x,y)==1 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0 
-			&& matrix[x+2][y]==0){ //controllo posizioni adiacenti libere
+		} else if(matrix[x][y]==0 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0 && matrix[x+2][y]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=3;
 			matrix[x+1][y]=3;
 			matrix[x+2][y]=3;
 			stampa(dimensione, matrix, NULL, NULL);
-		}
-		else {
-			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
+		} else {
+			puts("Posizione già occupata");
 			i--; //faccio ripetere l'operazione
 		}
-		
 	}
+	
 	if(enormi>0)
 		printf("=================================\n");
 
 	//inserimento enormi
 	for(i=0; i<enormi; i++) {
-		printf("Inserimento enormi (4) \n");
+		printf("\nInserimento enormi (4 caselle) \n");
+		
         x=chiediNumero("inserire riga(numero): ");
-
-        y=chiediLettera("inserire colonna(lettera): ");
-	
+        y=chiediLettera("inserire colonna(lettera): ");	
         verso=chiediNumero("inserire verso(1-orizzontale , 0-verticale): ");
 		
-		if(matrix[x][y]==0 && check(x,y)==1 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0 
-			&& matrix[x][y+2]==0 && matrix[x][y+3]==0){ //controllo posizioni adiacenti libere
+		if( ! check(x,y,dimensione,4,verso)){ // controllo che la nave stia nella mappa
+			puts("Inserimento non valido");
+			i--; //faccio ripetere l'operazione
+		} else if(matrix[x][y]==0 && verso==1 && matrix[x][y]==0 && matrix[x][y+1]==0 && matrix[x][y+2]==0 && matrix[x][y+3]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=4;
 			matrix[x][y+1]=4;
 			matrix[x][y+2]=4;
 			matrix[x][y+3]=4;
 			stampa(dimensione, matrix, NULL, NULL);
-		}
-		else if(matrix[x][y]==0 && check(x,y)==1 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0 
-			&& matrix[x+2][y]==0 && matrix[x+3][y]==0){ //controllo posizioni adiacenti libere
+		} else if(matrix[x][y]==0 && verso==0 && matrix[x][y]==0 && matrix[x+1][y]==0 && matrix[x+2][y]==0 && matrix[x+3][y]==0){ //controllo posizioni adiacenti libere
 			matrix[x][y]=4;
 			matrix[x+1][y]=4;
 			matrix[x+2][y]=4;
 			matrix[x+3][y]=4;
 			stampa(dimensione, matrix, NULL, NULL);
-		}
-		else {
-			printf("posizione (%d,%d,%d) già occupata o inserimento errato",x,y,verso);
+		} else {
+			puts("Posizione già occupata");
 			i--; //faccio ripetere l'operazione
 		}
 		
@@ -351,11 +346,14 @@ int ** posizionamento_giocatore(int dimensione, int ** matrix) {
 }
 
 /*
-* controlla che l'inserimento sia un numero compreso in un certo range
+* Controlla che la nave inserita stia nella matrice
 *  STATO: completa
 */
-int check(int x,int y) {
-    return x>=0 && x<=10 && y>=0 && y<=10;
+int check(const int x,const int y,const int dim,const int lunghezza,const int orizzontale) {
+	return x>=0 && x<dim && y>=0 && y<dim && // La casella iniziale è nella matrice e...
+		(lunghezza == 1 || // ...la nave occupa una sola casella o...
+			(orizzontale && (y+lunghezza-1<dim)) || // ...la nave è orizzontale e la casella finale è nella matrice o...
+			( ! orizzontale && (x+lunghezza-1<dim))); // ...la nave è verticale e la casella finale è nella matrice
 }
 
 
