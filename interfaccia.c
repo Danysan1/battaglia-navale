@@ -1,7 +1,9 @@
 #include "interfaccia.h"
+
+#include <stdio.h>
 #include <stdlib.h>
 
-void debug(const char *testo){
+void debug(const char * const testo){
 #ifdef debug_enable
         printf("DEBUG: %s\n", testo);
 #else
@@ -89,7 +91,7 @@ void stampa(const int dim, int **giocatore, int **nemico, int **nemico_scoperti)
     putchar('\n');
 }
 
-int chiediNumero(const char * testo){
+int chiediNumero(const char * const testo){
     int output = -1;
 
     if(testo)
@@ -101,7 +103,7 @@ int chiediNumero(const char * testo){
     return output;
 }
 
-int chiediLettera(const char * testo){
+int chiediLettera(const char * const testo){
     char lettera;
     int output = -1;
 
