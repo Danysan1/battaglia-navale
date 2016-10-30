@@ -12,6 +12,7 @@ void debug(const char * const testo){
 }
 
 void legenda(){
+    puts("\n\t\t\tLEGENDA");
     puts("\t\t0 = Casella di acqua");
     puts("\t1/2/3/4 = Nave da 1/2/3/4 caselle");
     puts("X = Nave colpita\t? = Casella sconosciuta");
