@@ -5,6 +5,7 @@
 #include<time.h>
 
 #include "interfaccia.h"
+#include "rete.h"
 
 /* ** Daniele Santini, Giuseppe Tempesta **
  * 
