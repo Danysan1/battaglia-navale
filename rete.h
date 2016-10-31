@@ -2,13 +2,12 @@
 #define rete
 
 // Funzioni Server
-int creaServer(const unsigned short porta); // Prepara una socket di ascolto e restituisce il file descriptor (o <0 in caso di errore)
+int creaServer(); // Prepara una socket di ascolto e restituisce il file descriptor (o <0 in caso di errore)
 int attendiConnessione(const int socketAscolto); // Attende che un client si connetta e restituisce la nuova socket (o <0 in caso di errore)
-int chiudiServer(const int socketAscolto); // Chiude la socket di ascolto
 int inviaDimensione(const int socket, const int dim); // Invia la dimensione del campo di gioco (dim==-1 -> Partita rifiutata)
 
 // Funzioni Client
-int creaClient(); // Si connette ad un server e restituisce la socket (o <0 in caso di errore)
+int creaClient(char *indirizzo); // Si connette ad un server e restituisce la socket (o <0 in caso di errore)
 int riceviDimensione(const int socket); // Riceve la dimensione del campo di gioco (dim==-1 -> errore di comunicazione o partita rifiutata)
 
 // Funzioni comuni
